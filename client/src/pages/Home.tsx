@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, MapPin, TrendingUp, HomeIcon, Star, ChevronLeft } from "lucide-react";
+import { Loader2, HomeIcon, Star, ChevronLeft } from "lucide-react";
 import { useState } from "react";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
@@ -36,7 +36,9 @@ interface RecommendedApartment {
 }
 
 export default function Home() {
-  const { user, loading, isAuthenticated } = useAuth();
+  const authState = useAuth();
+  const { user, loading, isAuthenticated } = authState;
+  
   const [budget, setBudget] = useState("");
   const [minArea, setMinArea] = useState("");
   const [investmentType, setInvestmentType] = useState("stable");
@@ -87,7 +89,6 @@ export default function Home() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-background">
-        {/* 헤더 */}
         <header className="border-b border-foreground/10 bg-background">
           <div className="container flex items-center justify-between py-6">
             <div className="flex items-center gap-3">
@@ -102,10 +103,8 @@ export default function Home() {
           </div>
         </header>
 
-        {/* 메인 콘텐츠 */}
         <main className="container py-20">
           <div className="grid grid-cols-12 gap-12">
-            {/* 좌측 - 텍스트 */}
             <div className="col-span-7 space-y-8">
               <div className="space-y-4">
                 <h2 className="text-5xl font-bold leading-tight">
@@ -114,52 +113,15 @@ export default function Home() {
                 </h2>
                 <p className="text-lg text-muted-foreground leading-relaxed">
                   예산, 면적, 교통 중요도를 입력하면 AI가 최적의 아파트를 추천합니다.
-                  단순한 나열이 아닌 <span className="font-semibold">이유 있는 추천</span>으로
-                  합리적인 선택을 돕습니다.
                 </p>
-              </div>
-
-              {/* 특징 */}
-              <div className="space-y-4">
-                <div className="flex gap-4">
-                  <div className="h-1 w-12 bg-accent mt-2" />
-                  <div>
-                    <h3 className="font-semibold mb-1">지하철 접근성 분석</h3>
-                    <p className="text-sm text-muted-foreground">
-                      반경 1km 이내 지하철역 개수, 거리, 환승역 정보를 종합 분석
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="h-1 w-12 bg-accent mt-2" />
-                  <div>
-                    <h3 className="font-semibold mb-1">투자 성향 맞춤</h3>
-                    <p className="text-sm text-muted-foreground">
-                      안정형/수익형 선호도에 따른 맞춤형 추천 알고리즘
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="h-1 w-12 bg-accent mt-2" />
-                  <div>
-                    <h3 className="font-semibold mb-1">자연어 설명</h3>
-                    <p className="text-sm text-muted-foreground">
-                      AI가 추천 이유를 명확하게 설명하여 신뢰도 있는 선택 지원
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
 
-            {/* 우측 - 입력 폼 */}
             <div className="col-span-5">
               <Card className="p-8 shadow-lg">
                 <h3 className="text-2xl font-bold mb-6">TOP 5 추천 받기</h3>
 
                 <div className="space-y-6">
-                  {/* 예산 입력 */}
                   <div className="space-y-2">
                     <Label htmlFor="budget" className="font-semibold">
                       가용 예산 (억 원)
@@ -171,12 +133,8 @@ export default function Home() {
                       value={budget}
                       onChange={(e) => setBudget(e.target.value)}
                     />
-                    <p className="text-xs text-muted-foreground">
-                      최신 실거래가 기준으로 필터링됩니다
-                    </p>
                   </div>
 
-                  {/* 최소 면적 입력 */}
                   <div className="space-y-2">
                     <Label htmlFor="minArea" className="font-semibold">
                       최소 면적 (㎡)
@@ -188,12 +146,8 @@ export default function Home() {
                       value={minArea}
                       onChange={(e) => setMinArea(e.target.value)}
                     />
-                    <p className="text-xs text-muted-foreground">
-                      이 이상의 면적을 가진 아파트만 추천됩니다
-                    </p>
                   </div>
 
-                  {/* 투자 성향 선택 */}
                   <div className="space-y-2">
                     <Label htmlFor="investmentType" className="font-semibold">
                       투자 성향
@@ -203,13 +157,12 @@ export default function Home() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="stable">안정형 (세대수 중심)</SelectItem>
-                        <SelectItem value="profit">수익형 (연식 중심)</SelectItem>
+                        <SelectItem value="stable">안정형</SelectItem>
+                        <SelectItem value="profit">수익형</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
-                  {/* 교통 중요도 선택 */}
                   <div className="space-y-2">
                     <Label htmlFor="transportImportance" className="font-semibold">
                       교통 중요도
@@ -219,14 +172,13 @@ export default function Home() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="1">교통은 크게 중요하지 않음</SelectItem>
-                        <SelectItem value="3">웬만하면 역세권이면 좋음</SelectItem>
-                        <SelectItem value="5">출퇴근 때문에 매우 중요함</SelectItem>
+                        <SelectItem value="1">크게 중요하지 않음</SelectItem>
+                        <SelectItem value="3">웬만하면 좋음</SelectItem>
+                        <SelectItem value="5">매우 중요함</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
-                  {/* 추천 버튼 */}
                   <Button
                     onClick={handleGetRecommendations}
                     disabled={isLoading}
@@ -250,7 +202,6 @@ export default function Home() {
     );
   }
 
-  // 로그인 후 대시보드
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-foreground/10 bg-background">
@@ -269,7 +220,6 @@ export default function Home() {
 
       <main className="container py-12">
         <div className="grid grid-cols-12 gap-8">
-          {/* 좌측 입력 폼 */}
           <div className="col-span-4">
             <Card className="p-6 sticky top-8">
               <h3 className="text-xl font-bold mb-6">추천 조건</h3>
@@ -350,10 +300,8 @@ export default function Home() {
             </Card>
           </div>
 
-          {/* 우측 결과 영역 */}
           <div className="col-span-8">
             {selectedApt ? (
-              // 상세 페이지
               <div className="space-y-6">
                 <Button
                   variant="outline"
@@ -445,7 +393,6 @@ export default function Home() {
                 </Card>
               </div>
             ) : recommendations.length > 0 ? (
-              // 결과 목록
               <div className="space-y-4">
                 <h3 className="text-2xl font-bold mb-6">추천 결과 TOP 5</h3>
                 {recommendations.map((apt, idx) => (
@@ -508,7 +455,6 @@ export default function Home() {
                 ))}
               </div>
             ) : (
-              // 초기 상태
               <div className="text-center py-12">
                 <p className="text-muted-foreground text-lg">
                   왼쪽 패널에서 조건을 입력하고 "TOP 5 추천 받기"를 클릭하세요.

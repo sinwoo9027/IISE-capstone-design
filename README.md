@@ -347,23 +347,7 @@ feat: 추천 알고리즘에 트렌드 점수 추가
 - [ ] 대출 계산기
 - [ ] 세금 계산 도구
 
-## 📞 지원 및 문의
-
-- 📧 이메일: support@aptgpt.com
-- 💬 GitHub Issues: [이슈 보고](https://github.com/sinwoo9027/IISE-capstone-design/issues)
-- 📱 카카오톡: @aptgpt
 
 ## 📄 라이선스
 
 이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
-
-## 👥 기여자
-
-- **프로젝트 리더:** sinwoo9027
-- **개발팀:** AptGPT Team
-
----
-
-**마지막 업데이트:** 2026년 2월 1일
-
-더 많은 정보는 [공식 문서](https://docs.aptgpt.com)를 참조하세요.

@@ -1,14 +1,14 @@
-import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, MapPin, TrendingUp, HomeIcon, Star } from "lucide-react";
+import { Loader2, MapPin, TrendingUp, HomeIcon, Star, ChevronLeft } from "lucide-react";
 import { useState } from "react";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 interface RecommendedApartment {
   aptId: number;
@@ -62,7 +62,7 @@ export default function Home() {
         transportImportance: parseInt(transportImportance),
       });
 
-      if (result.success && result.recommendations.length > 0) {
+      if (result.success && result.recommendations && result.recommendations.length > 0) {
         setRecommendations(result.recommendations);
         toast.success(result.message || "추천이 완료되었습니다!");
       } else {
@@ -360,7 +360,8 @@ export default function Home() {
                   onClick={() => setSelectedApt(null)}
                   className="mb-4"
                 >
-                  ← 목록으로 돌아가기
+                  <ChevronLeft className="h-4 w-4 mr-2" />
+                  목록으로 돌아가기
                 </Button>
 
                 <Card className="p-8">
@@ -420,7 +421,7 @@ export default function Home() {
                     <div>
                       <h3 className="font-bold mb-4">주변 지하철역</h3>
                       <div className="space-y-2">
-                        {selectedApt.nearbySubways.length > 0 ? (
+                        {selectedApt.nearbySubways && selectedApt.nearbySubways.length > 0 ? (
                           selectedApt.nearbySubways.map((subway, idx) => (
                             <div key={idx} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                               <div>

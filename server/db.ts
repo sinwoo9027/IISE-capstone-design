@@ -108,6 +108,7 @@ export async function getFilteredApartments(params: {
         apt: apartments,
         latestPrice: sql<number>`MAX(CAST(${transactions.priceKrw} AS UNSIGNED))`,
         latestArea: sql<number>`MAX(CAST(${transactions.areaM2} AS UNSIGNED))`,
+        latestDate: sql<string>`MAX(${transactions.contractDate})`,
       })
       .from(apartments)
       .leftJoin(
@@ -121,7 +122,7 @@ export async function getFilteredApartments(params: {
         )
       )
       .groupBy(apartments.id)
-      .orderBy(desc(transactions.contractDate));
+      .orderBy(sql`MAX(${transactions.contractDate}) DESC`);
 
     return result;
   } catch (error) {

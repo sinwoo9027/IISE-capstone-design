@@ -156,11 +156,5 @@ export async function fetchAndSaveWeeklyTransactions() {
   console.log('Weekly transaction data fetch completed');
 }
 
-// 스크립트 실행
-fetchAndSaveWeeklyTransactions().then(() => {
-  console.log('Fetch completed');
-  process.exit(0);
-}).catch((error) => {
-  console.error('Fetch failed:', error);
-  process.exit(1);
-});
+// 스크립트는 scheduler.ts에서 cron으로 실행됨
+// 수동 실행이 필요한 경우: npx tsx server/fetchTransactions.ts

@@ -1,0 +1,63 @@
+{
+  "query": "DESC transactions;\nSELECT COUNT(*) as apartment_count FROM apartments;\nSELECT COUNT(*) as transaction_count FROM transactions;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 45SeMPVVWbWtu9a.7862c7fde036 --database Q77QHiwVKcvLETyWsxWgjH --execute DESC transactions;\nSELECT COUNT(*) as apartment_count FROM apartments;\nSELECT COUNT(*) as transaction_count FROM transactions;",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "apt_id",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "MUL",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "contract_date",
+      "Type": "varchar(50)",
+      "Null": "NO",
+      "Key": "MUL",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "price_krw",
+      "Type": "varchar(50)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "area_m2",
+      "Type": "varchar(50)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "created_at",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    }
+  ],
+  "messages": [
+    "apartment_count",
+    "42",
+    "transaction_count",
+    "0"
+  ],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint(11)\tNO\tPRI\tNULL\tauto_increment\napt_id\tint(11)\tNO\tMUL\tNULL\t\ncontract_date\tvarchar(50)\tNO\tMUL\tNULL\t\nprice_krw\tvarchar(50)\tNO\t\tNULL\t\narea_m2\tvarchar(50)\tNO\t\tNULL\t\ncreated_at\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\t\napartment_count\n42\ntransaction_count\n0\n",
+  "stderr": "",
+  "execution_time_ms": 2039
+}

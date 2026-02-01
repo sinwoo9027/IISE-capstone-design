@@ -1,0 +1,25 @@
+{
+  "query": "SELECT COUNT(*) as apartment_count FROM apartments;\nSELECT COUNT(*) as transaction_count FROM transactions;\nSELECT COUNT(*) as subway_count FROM subway_stations;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 45SeMPVVWbWtu9a.7862c7fde036 --database Q77QHiwVKcvLETyWsxWgjH --execute SELECT COUNT(*) as apartment_count FROM apartments;\nSELECT COUNT(*) as transaction_count FROM transactions;\nSELECT COUNT(*) as subway_count FROM subway_stations;",
+  "rows": [
+    {
+      "apartment_count": "0"
+    },
+    {
+      "apartment_count": "transaction_count"
+    },
+    {
+      "apartment_count": "0"
+    },
+    {
+      "apartment_count": "subway_count"
+    },
+    {
+      "apartment_count": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "apartment_count\n0\ntransaction_count\n0\nsubway_count\n0\n",
+  "stderr": "",
+  "execution_time_ms": 1926
+}

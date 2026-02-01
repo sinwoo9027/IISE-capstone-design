@@ -37,7 +37,7 @@ interface SubwayInfo {
   stationName: string;
   line: string;
   distance: number;
-  isTransfer: number;
+  isTransfer: number | null;
 }
 
 /**
@@ -62,7 +62,7 @@ export function calculateTransportScore(subwayStations: SubwayInfo[]): number {
   const distanceScore = Math.max(0, 40 - minDistance * 40);
 
   // 환승역 보너스 (+10점)
-  const hasTransferStation = nearbyStations.some((s) => s.isTransfer === 1);
+  const hasTransferStation = nearbyStations.some((s) => (s.isTransfer ?? 0) === 1);
   const transferBonus = hasTransferStation ? 10 : 0;
 
   // 최종 점수 (0~100 클램핑)
@@ -73,9 +73,9 @@ export function calculateTransportScore(subwayStations: SubwayInfo[]): number {
 // ==================== 투자 성향 점수 ====================
 
 interface ApartmentInfo {
-  households?: number;
-  builtYear?: number;
-  reprAreaM2?: string;
+  households?: number | null;
+  builtYear?: number | null;
+  reprAreaM2?: string | null;
 }
 
 /**

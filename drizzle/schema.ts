@@ -118,3 +118,41 @@ export const recommendations = mysqlTable("recommendations", {
 
 export type Recommendation = typeof recommendations.$inferSelect;
 export type InsertRecommendation = typeof recommendations.$inferInsert;
+
+/**
+ * Subscriptions table - 구독 정보
+ */
+export const subscriptions = mysqlTable("subscriptions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  stripeCustomerId: varchar("stripe_customer_id", { length: 255 }).notNull(),
+  stripeSubscriptionId: varchar("stripe_subscription_id", { length: 255 }).notNull().unique(),
+  plan: varchar("plan", { length: 50 }).notNull(),
+  status: varchar("status", { length: 50 }).notNull(),
+  currentPeriodStart: timestamp("current_period_start"),
+  currentPeriodEnd: timestamp("current_period_end"),
+  canceledAt: timestamp("canceled_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Subscription = typeof subscriptions.$inferSelect;
+export type InsertSubscription = typeof subscriptions.$inferInsert;
+
+/**
+ * Payments table - 결제 기록
+ */
+export const payments = mysqlTable("payments", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  stripePaymentIntentId: varchar("stripe_payment_intent_id", { length: 255 }).notNull().unique(),
+  amount: int("amount").notNull(),
+  currency: varchar("currency", { length: 10 }).notNull(),
+  status: varchar("status", { length: 50 }).notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Payment = typeof payments.$inferSelect;
+export type InsertPayment = typeof payments.$inferInsert;

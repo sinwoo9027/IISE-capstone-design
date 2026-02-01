@@ -4,9 +4,36 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, MapPin, TrendingUp, Home as HomeIcon } from "lucide-react";
+import { Loader2, MapPin, TrendingUp, HomeIcon, Star } from "lucide-react";
 import { useState } from "react";
 import { getLoginUrl } from "@/const";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
+
+interface RecommendedApartment {
+  aptId: number;
+  aptName: string;
+  sigungu: string;
+  dong: string;
+  lat: string;
+  lng: string;
+  builtYear: number | null;
+  households: number | null;
+  reprAreaM2: string | null;
+  latestPrice: number;
+  latestArea: number;
+  transportScore: number;
+  investmentScore: number;
+  trendScore: number;
+  finalScore: number;
+  nearbySubways: Array<{
+    stationName: string;
+    line: string;
+    distance: number;
+    isTransfer: number | null;
+  }>;
+  transactionCount: number;
+}
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -15,15 +42,38 @@ export default function Home() {
   const [investmentType, setInvestmentType] = useState("stable");
   const [transportImportance, setTransportImportance] = useState("3");
   const [isLoading, setIsLoading] = useState(false);
+  const [recommendations, setRecommendations] = useState<RecommendedApartment[]>([]);
+  const [selectedApt, setSelectedApt] = useState<RecommendedApartment | null>(null);
+
+  const recommendationsMutation = trpc.recommendations.getRecommendations.useMutation();
 
   const handleGetRecommendations = async () => {
     if (!budget || !minArea) {
-      alert("예산과 최소 면적을 입력해주세요.");
+      toast.error("예산과 최소 면적을 입력해주세요.");
       return;
     }
+
     setIsLoading(true);
-    // TODO: API 호출
-    setTimeout(() => setIsLoading(false), 1000);
+    try {
+      const result = await recommendationsMutation.mutateAsync({
+        budget,
+        minArea,
+        investmentType: investmentType as "stable" | "profit",
+        transportImportance: parseInt(transportImportance),
+      });
+
+      if (result.success && result.recommendations.length > 0) {
+        setRecommendations(result.recommendations);
+        toast.success(result.message || "추천이 완료되었습니다!");
+      } else {
+        toast.error(result.error || "추천 계산에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("추천 계산 중 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (loading) {
@@ -229,26 +279,26 @@ export default function Home() {
                   <Label htmlFor="budget2" className="font-semibold text-sm">
                     가용 예산 (억 원)
                   </Label>
-                    <Input
-                      id="budget2"
-                      type="number"
-                      placeholder="예: 50"
-                      value={budget}
-                      onChange={(e) => setBudget(e.target.value)}
-                    />
+                  <Input
+                    id="budget2"
+                    type="number"
+                    placeholder="예: 50"
+                    value={budget}
+                    onChange={(e) => setBudget(e.target.value)}
+                  />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="minArea2" className="font-semibold text-sm">
                     최소 면적 (㎡)
                   </Label>
-                    <Input
-                      id="minArea2"
-                      type="number"
-                      placeholder="예: 60"
-                      value={minArea}
-                      onChange={(e) => setMinArea(e.target.value)}
-                    />
+                  <Input
+                    id="minArea2"
+                    type="number"
+                    placeholder="예: 60"
+                    value={minArea}
+                    onChange={(e) => setMinArea(e.target.value)}
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -302,13 +352,168 @@ export default function Home() {
 
           {/* 우측 결과 영역 */}
           <div className="col-span-8">
-            <div className="space-y-6">
+            {selectedApt ? (
+              // 상세 페이지
+              <div className="space-y-6">
+                <Button
+                  variant="outline"
+                  onClick={() => setSelectedApt(null)}
+                  className="mb-4"
+                >
+                  ← 목록으로 돌아가기
+                </Button>
+
+                <Card className="p-8">
+                  <div className="flex items-start justify-between mb-6">
+                    <div>
+                      <h2 className="text-3xl font-bold mb-2">{selectedApt.aptName}</h2>
+                      <p className="text-muted-foreground">
+                        {selectedApt.sigungu} {selectedApt.dong}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-4xl font-bold text-accent mb-2">
+                        {selectedApt.finalScore}
+                      </div>
+                      <p className="text-sm text-muted-foreground">종합 점수</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4 mb-8 pb-8 border-b border-foreground/10">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">교통 점수</p>
+                      <p className="text-2xl font-bold">{selectedApt.transportScore}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">투자 점수</p>
+                      <p className="text-2xl font-bold">{selectedApt.investmentScore}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">트렌드 점수</p>
+                      <p className="text-2xl font-bold">{selectedApt.trendScore}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="font-bold mb-4">기본 정보</h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-muted-foreground">면적</p>
+                          <p className="font-semibold">{selectedApt.reprAreaM2} ㎡</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">건축년도</p>
+                          <p className="font-semibold">{selectedApt.builtYear}년</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">세대수</p>
+                          <p className="font-semibold">{selectedApt.households}세대</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">최신 거래가</p>
+                          <p className="font-semibold">{(selectedApt.latestPrice / 100000000).toFixed(1)}억 원</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="font-bold mb-4">주변 지하철역</h3>
+                      <div className="space-y-2">
+                        {selectedApt.nearbySubways.length > 0 ? (
+                          selectedApt.nearbySubways.map((subway, idx) => (
+                            <div key={idx} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                              <div>
+                                <p className="font-semibold">{subway.stationName}</p>
+                                <p className="text-sm text-muted-foreground">{subway.line}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-semibold">{subway.distance.toFixed(2)} km</p>
+                                {subway.isTransfer === 1 && (
+                                  <p className="text-xs text-accent">환승역</p>
+                                )}
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-muted-foreground">근처 지하철역 정보가 없습니다.</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            ) : recommendations.length > 0 ? (
+              // 결과 목록
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold mb-6">추천 결과 TOP 5</h3>
+                {recommendations.map((apt, idx) => (
+                  <Card
+                    key={apt.aptId}
+                    className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
+                    onClick={() => setSelectedApt(apt)}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="text-2xl font-bold text-accent">#{idx + 1}</div>
+                          <div>
+                            <h4 className="text-lg font-bold">{apt.aptName}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {apt.sigungu} {apt.dong}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-4 gap-4 mt-4">
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1">종합 점수</p>
+                            <p className="text-xl font-bold text-accent">{apt.finalScore}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1">교통</p>
+                            <p className="text-lg font-semibold">{apt.transportScore}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1">투자</p>
+                            <p className="text-lg font-semibold">{apt.investmentScore}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1">트렌드</p>
+                            <p className="text-lg font-semibold">{apt.trendScore}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2 mt-4">
+                          <span className="text-xs bg-muted px-2 py-1 rounded">
+                            {apt.reprAreaM2} ㎡
+                          </span>
+                          <span className="text-xs bg-muted px-2 py-1 rounded">
+                            {(apt.latestPrice / 100000000).toFixed(1)}억 원
+                          </span>
+                          <span className="text-xs bg-muted px-2 py-1 rounded">
+                            {apt.builtYear}년
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <Button variant="outline" size="sm">
+                          <Star className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              // 초기 상태
               <div className="text-center py-12">
                 <p className="text-muted-foreground text-lg">
                   왼쪽 패널에서 조건을 입력하고 "TOP 5 추천 받기"를 클릭하세요.
                 </p>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </main>

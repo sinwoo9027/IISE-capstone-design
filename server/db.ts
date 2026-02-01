@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, and, gte, lte, desc, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, apartments, transactions, subwayStations, userPreferences, recommendations } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,181 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+// ==================== Apartment Queries ====================
+
+/**
+ * 예산과 면적 조건에 맞는 아파트 조회
+ */
+export async function getFilteredApartments(params: {
+  maxPriceKrw: number;
+  minAreaM2: number;
+}) {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    // 최신 거래가 기준으로 필터링
+    const result = await db
+      .select({
+        apt: apartments,
+        latestPrice: sql<number>`CAST(${transactions.priceKrw} AS UNSIGNED)`,
+        latestArea: sql<number>`CAST(${transactions.areaM2} AS UNSIGNED)`,
+      })
+      .from(apartments)
+      .leftJoin(
+        transactions,
+        eq(apartments.id, transactions.aptId)
+      )
+      .where(
+        and(
+          sql`CAST(${transactions.priceKrw} AS UNSIGNED) <= ${params.maxPriceKrw}`,
+          sql`CAST(${transactions.areaM2} AS UNSIGNED) >= ${params.minAreaM2}`
+        )
+      )
+      .groupBy(apartments.id)
+      .orderBy(desc(transactions.contractDate));
+
+    return result;
+  } catch (error) {
+    console.error("[Database] Failed to get filtered apartments:", error);
+    return [];
+  }
+}
+
+/**
+ * 특정 아파트의 모든 거래 기록 조회
+ */
+export async function getApartmentTransactions(aptId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    const result = await db
+      .select()
+      .from(transactions)
+      .where(eq(transactions.aptId, aptId))
+      .orderBy(desc(transactions.contractDate));
+
+    return result;
+  } catch (error) {
+    console.error("[Database] Failed to get apartment transactions:", error);
+    return [];
+  }
+}
+
+/**
+ * 특정 좌표 근처의 지하철역 조회 (반경 1km)
+ */
+export async function getNearbySubwayStations(lat: number, lng: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    const result = await db
+      .select()
+      .from(subwayStations)
+      .where(
+        and(
+          sql`ABS(CAST(${subwayStations.lat} AS DECIMAL(10,6)) - ${lat}) < 0.01`,
+          sql`ABS(CAST(${subwayStations.lng} AS DECIMAL(10,6)) - ${lng}) < 0.01`
+        )
+      );
+
+    return result;
+  } catch (error) {
+    console.error("[Database] Failed to get nearby subway stations:", error);
+    return [];
+  }
+}
+
+/**
+ * 사용자 선호도 저장
+ */
+export async function saveUserPreference(userId: number, preference: {
+  budget: string;
+  minArea: string;
+  investmentType: string;
+  transportImportance: number;
+  preferredSigungu?: string;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+
+  try {
+    const result = await db.insert(userPreferences).values({
+      userId,
+      ...preference,
+    });
+
+    return result;
+  } catch (error) {
+    console.error("[Database] Failed to save user preference:", error);
+    return null;
+  }
+}
+
+/**
+ * 추천 결과 저장
+ */
+export async function saveRecommendation(data: {
+  userId: number;
+  aptId: number;
+  score: string;
+  transportScore: string;
+  investmentScore: string;
+  trendScore: string;
+  explanation?: string;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+
+  try {
+    const result = await db.insert(recommendations).values(data);
+    return result;
+  } catch (error) {
+    console.error("[Database] Failed to save recommendation:", error);
+    return null;
+  }
+}
+
+/**
+ * 사용자의 추천 결과 조회
+ */
+export async function getUserRecommendations(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    const result = await db
+      .select()
+      .from(recommendations)
+      .where(eq(recommendations.userId, userId))
+      .orderBy(desc(recommendations.createdAt));
+
+    return result;
+  } catch (error) {
+    console.error("[Database] Failed to get user recommendations:", error);
+    return [];
+  }
+}
+
+/**
+ * 특정 아파트 조회
+ */
+export async function getApartmentById(aptId: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  try {
+    const result = await db
+      .select()
+      .from(apartments)
+      .where(eq(apartments.id, aptId))
+      .limit(1);
+
+    return result.length > 0 ? result[0] : null;
+  } catch (error) {
+    console.error("[Database] Failed to get apartment:", error);
+    return null;
+  }
+}

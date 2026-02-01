@@ -17,12 +17,14 @@ export const appRouter = router({
     }),
   }),
 
-  // TODO: add feature routers here, e.g.
-  // todo: router({
-  //   list: protectedProcedure.query(({ ctx }) =>
-  //     db.getUserTodos(ctx.user.id)
-  //   ),
-  // }),
+  recommendations: router({
+    getRecommendations: publicProcedure.query(async () => {
+      return {
+        recommendations: [],
+        message: 'Recommendations will be generated here',
+      };
+    }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

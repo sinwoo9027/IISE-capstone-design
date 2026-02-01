@@ -106,8 +106,8 @@ export async function getFilteredApartments(params: {
     const result = await db
       .select({
         apt: apartments,
-        latestPrice: sql<number>`CAST(${transactions.priceKrw} AS UNSIGNED)`,
-        latestArea: sql<number>`CAST(${transactions.areaM2} AS UNSIGNED)`,
+        latestPrice: sql<number>`MAX(CAST(${transactions.priceKrw} AS UNSIGNED))`,
+        latestArea: sql<number>`MAX(CAST(${transactions.areaM2} AS UNSIGNED))`,
       })
       .from(apartments)
       .leftJoin(

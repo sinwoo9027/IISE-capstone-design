@@ -21,6 +21,7 @@ import {
   interpretTransportScore,
   interpretTrendScore,
 } from "./recommender";
+import { createCheckoutSession } from "./stripe";
 
 export const appRouter = router({
   system: systemRouter,
@@ -244,6 +245,34 @@ export const appRouter = router({
           return {
             success: false,
             apartment: null,
+          };
+        }
+      }),
+  }),
+
+  payments: router({
+    createCheckout: protectedProcedure
+      .input(
+        z.object({
+          planId: z.enum(["premium", "enterprise"]),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        try {
+          const origin = ctx.req.headers.origin || "https://aptgpt.manus.space";
+          const result = await createCheckoutSession({
+            userId: ctx.user.id,
+            userEmail: ctx.user.email || "",
+            userName: ctx.user.name || "User",
+            planId: input.planId,
+            origin,
+          });
+          return result;
+        } catch (error) {
+          console.error("[Payments] Error:", error);
+          return {
+            success: false,
+            error: "결제 세션 생성에 실패했습니다.",
           };
         }
       }),

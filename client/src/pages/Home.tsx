@@ -3,12 +3,13 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, HomeIcon, Star, ChevronLeft } from "lucide-react";
-import { useState } from "react";
+import { Loader2, HomeIcon, Star, ChevronLeft, MapPin } from "lucide-react";
+import { useState, useRef } from "react";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { MapView } from "@/components/Map";
 
 interface RecommendedApartment {
   aptId: number;
@@ -46,8 +47,62 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [recommendations, setRecommendations] = useState<RecommendedApartment[]>([]);
   const [selectedApt, setSelectedApt] = useState<RecommendedApartment | null>(null);
+  const [showMap, setShowMap] = useState(false);
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
 
   const recommendationsMutation = trpc.recommendations.getRecommendations.useMutation();
+
+  const handleMapReady = (map: google.maps.Map) => {
+    mapRef.current = map;
+    if (recommendations.length > 0) {
+      addMarkersToMap(map, recommendations);
+    }
+  };
+
+  const addMarkersToMap = (map: google.maps.Map, apartments: RecommendedApartment[]) => {
+    // Clear existing markers
+    markersRef.current.forEach(marker => marker.map = null);
+    markersRef.current = [];
+
+    if (!window.google) return;
+
+    // Calculate bounds to fit all markers
+    const bounds = new window.google.maps.LatLngBounds();
+
+    apartments.forEach((apt, idx) => {
+      const position = {
+        lat: parseFloat(apt.lat),
+        lng: parseFloat(apt.lng),
+      };
+
+      bounds.extend(position);
+
+      // Create custom marker content
+      const markerContent = document.createElement('div');
+      markerContent.className = 'flex items-center justify-center w-8 h-8 bg-accent text-white rounded-full font-bold text-sm';
+      markerContent.textContent = (idx + 1).toString();
+
+      const marker = new window.google.maps.marker.AdvancedMarkerElement({
+        map,
+        position,
+        title: apt.aptName,
+        content: markerContent,
+      });
+
+      // Add click listener to show info window
+      marker.addListener('click', () => {
+        setSelectedApt(apt);
+      });
+
+      markersRef.current.push(marker);
+    });
+
+    // Fit map to bounds
+    if (apartments.length > 0) {
+      map.fitBounds(bounds);
+    }
+  };
 
   const handleGetRecommendations = async () => {
     if (!budget || !minArea) {
@@ -66,6 +121,10 @@ export default function Home() {
 
       if (result.success && result.recommendations && result.recommendations.length > 0) {
         setRecommendations(result.recommendations);
+        setShowMap(true);
+        if (mapRef.current) {
+          addMarkersToMap(mapRef.current, result.recommendations);
+        }
         toast.success(result.message || "추천이 완료되었습니다!");
       } else {
         toast.error(result.error || "추천 계산에 실패했습니다.");
@@ -301,6 +360,35 @@ export default function Home() {
           </div>
 
           <div className="col-span-8">
+            {showMap && recommendations.length > 0 && (
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    추천 아파트 지도
+                  </h3>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowMap(false)}
+                  >
+                    목록 보기
+                  </Button>
+                </div>
+                <Card className="overflow-hidden">
+                  <MapView
+                    initialCenter={{
+                      lat: parseFloat(recommendations[0]?.lat || "37.4979"),
+                      lng: parseFloat(recommendations[0]?.lng || "127.0276"),
+                    }}
+                    initialZoom={13}
+                    onMapReady={handleMapReady}
+                    className="h-[600px]"
+                  />
+                </Card>
+              </div>
+            )}
+
             {selectedApt ? (
               <div className="space-y-6">
                 <Button

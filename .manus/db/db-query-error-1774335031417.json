@@ -1,0 +1,8 @@
+{
+  "query": "SELECT 'apartments' AS tbl, COUNT(*) AS cnt FROM apartments UNION ALL SELECT 'transactions', COUNT(*) FROM transactions UNION ALL SELECT 'subway_stations', COUNT(*) FROM subway_stations UNION ALL SELECT 'news_info', COUNT(*) FROM news_info UNION ALL SELECT 'rebuild_status_current', COUNT(*) FROM rebuild_status_current;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 45SeMPVVWbWtu9a.7862c7fde036 --database Q77QHiwVKcvLETyWsxWgjH --execute SELECT 'apartments' AS tbl, COUNT(*) AS cnt FROM apartments UNION ALL SELECT 'transactions', COUNT(*) FROM transactions UNION ALL SELECT 'subway_stations', COUNT(*) FROM subway_stations UNION ALL SELECT 'news_info', COUNT(*) FROM news_info UNION ALL SELECT 'rebuild_status_current', COUNT(*) FROM rebuild_status_current;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1146 (42S02) at line 1: Table 'q77qhiwvkcvletywsxwgjh.rebuild_status_current' doesn't exist"
+  ]
+}

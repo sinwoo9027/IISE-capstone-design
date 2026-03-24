@@ -1,0 +1,98 @@
+{
+  "query": "DESCRIBE news_info;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 45SeMPVVWbWtu9a.7862c7fde036 --database Q77QHiwVKcvLETyWsxWgjH --execute DESCRIBE news_info;",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "news_id",
+      "Type": "varchar(255)",
+      "Null": "NO",
+      "Key": "UNI",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "title",
+      "Type": "text",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "summary",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "link",
+      "Type": "text",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "original_link",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "publish_date",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "source",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "region_code",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "apt_id",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "created_at",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint\tNO\tPRI\tNULL\tauto_increment\nnews_id\tvarchar(255)\tNO\tUNI\tNULL\t\ntitle\ttext\tNO\t\tNULL\t\nsummary\ttext\tYES\t\tNULL\t\nlink\ttext\tNO\t\tNULL\t\noriginal_link\ttext\tYES\t\tNULL\t\npublish_date\ttimestamp\tYES\t\tNULL\t\nsource\tvarchar(100)\tYES\t\tNULL\t\nregion_code\tvarchar(50)\tYES\t\tNULL\t\napt_id\tint\tYES\t\tNULL\t\ncreated_at\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\t\n",
+  "stderr": "",
+  "execution_time_ms": 1565
+}

@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE recommendations ADD COLUMN scale_score VARCHAR(50) DEFAULT '0';\nALTER TABLE recommendations ADD COLUMN rebuild_score VARCHAR(50) DEFAULT '0';\nALTER TABLE recommendations ADD COLUMN price_trend_score VARCHAR(50) DEFAULT '0';\nALTER TABLE recommendations ADD COLUMN jeonse_ratio_score VARCHAR(50) DEFAULT '0';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 45SeMPVVWbWtu9a.7862c7fde036 --database Q77QHiwVKcvLETyWsxWgjH --execute ALTER TABLE recommendations ADD COLUMN scale_score VARCHAR(50) DEFAULT '0';\nALTER TABLE recommendations ADD COLUMN rebuild_score VARCHAR(50) DEFAULT '0';\nALTER TABLE recommendations ADD COLUMN price_trend_score VARCHAR(50) DEFAULT '0';\nALTER TABLE recommendations ADD COLUMN jeonse_ratio_score VARCHAR(50) DEFAULT '0';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 3037
+}

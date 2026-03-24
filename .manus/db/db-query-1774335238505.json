@@ -1,0 +1,178 @@
+{
+  "query": "DESCRIBE rebuild_status_current; DESCRIBE apartments;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 45SeMPVVWbWtu9a.7862c7fde036 --database Q77QHiwVKcvLETyWsxWgjH --execute DESCRIBE rebuild_status_current; DESCRIBE apartments;",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "apt_id",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "UNI",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "is_rebuild_candidate",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "stage",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "stage_updated_at",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "approval_date",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "management_disposal_date",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "expected_households",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "updated_date",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+    },
+    {
+      "Field": "Field",
+      "Type": "Type",
+      "Null": "Null",
+      "Key": "Key",
+      "Default": "Default",
+      "Extra": "Extra"
+    },
+    {
+      "Field": "id",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "apt_name",
+      "Type": "varchar(255)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "sigungu",
+      "Type": "varchar(100)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "dong",
+      "Type": "varchar(100)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "lat",
+      "Type": "varchar(50)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "lng",
+      "Type": "varchar(50)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "built_year",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "households",
+      "Type": "int",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "repr_area_m2",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "created_at",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "updated_at",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint\tNO\tPRI\tNULL\tauto_increment\napt_id\tint\tNO\tUNI\tNULL\t\nis_rebuild_candidate\tint\tYES\t\t0\t\nstage\tvarchar(50)\tYES\t\tNULL\t\nstage_updated_at\ttimestamp\tYES\t\tNULL\t\napproval_date\ttimestamp\tYES\t\tNULL\t\nmanagement_disposal_date\ttimestamp\tYES\t\tNULL\t\nexpected_households\tint\tYES\t\tNULL\t\nupdated_date\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP\nField\tType\tNull\tKey\tDefault\tExtra\nid\tint\tNO\tPRI\tNULL\tauto_increment\napt_name\tvarchar(255)\tNO\t\tNULL\t\nsigungu\tvarchar(100)\tNO\t\tNULL\t\ndong\tvarchar(100)\tNO\t\tNULL\t\nlat\tvarchar(50)\tNO\t\tNULL\t\nlng\tvarchar(50)\tNO\t\tNULL\t\nbuilt_year\tint\tYES\t\tNULL\t\nhouseholds\tint\tYES\t\tNULL\t\nrepr_area_m2\tvarchar(50)\tYES\t\tNULL\t\ncreated_at\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\t\nupdated_at\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP\n",
+  "stderr": "",
+  "execution_time_ms": 1825
+}

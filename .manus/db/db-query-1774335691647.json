@@ -1,0 +1,45 @@
+{
+  "query": "SELECT t.id, t.apt_id, t.price_krw, t.area_m2, t.contract_date FROM transactions t LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 45SeMPVVWbWtu9a.7862c7fde036 --database Q77QHiwVKcvLETyWsxWgjH --execute SELECT t.id, t.apt_id, t.price_krw, t.area_m2, t.contract_date FROM transactions t LIMIT 5;",
+  "rows": [
+    {
+      "id": "1",
+      "apt_id": "1",
+      "price_krw": "871460573",
+      "area_m2": "69.93",
+      "contract_date": "2025-07-01"
+    },
+    {
+      "id": "2",
+      "apt_id": "1",
+      "price_krw": "901800204",
+      "area_m2": "74.85",
+      "contract_date": "2025-08-01"
+    },
+    {
+      "id": "3",
+      "apt_id": "1",
+      "price_krw": "922619308",
+      "area_m2": "59.94",
+      "contract_date": "2025-06-01"
+    },
+    {
+      "id": "4",
+      "apt_id": "1",
+      "price_krw": "935695931",
+      "area_m2": "69.93",
+      "contract_date": "2026-02-01"
+    },
+    {
+      "id": "5",
+      "apt_id": "1",
+      "price_krw": "938621737",
+      "area_m2": "59.94",
+      "contract_date": "2025-09-01"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tapt_id\tprice_krw\tarea_m2\tcontract_date\n1\t1\t871460573\t69.93\t2025-07-01\n2\t1\t901800204\t74.85\t2025-08-01\n3\t1\t922619308\t59.94\t2025-06-01\n4\t1\t935695931\t69.93\t2026-02-01\n5\t1\t938621737\t59.94\t2025-09-01\n",
+  "stderr": "",
+  "execution_time_ms": 1542
+}

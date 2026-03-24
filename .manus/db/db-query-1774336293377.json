@@ -1,0 +1,82 @@
+{
+  "query": "DESCRIBE recommendations;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 45SeMPVVWbWtu9a.7862c7fde036 --database Q77QHiwVKcvLETyWsxWgjH --execute DESCRIBE recommendations;",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "user_id",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "apt_id",
+      "Type": "int",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "score",
+      "Type": "varchar(50)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "transport_score",
+      "Type": "varchar(50)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "investment_score",
+      "Type": "varchar(50)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "trend_score",
+      "Type": "varchar(50)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "explanation",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "created_at",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint\tNO\tPRI\tNULL\tauto_increment\nuser_id\tint\tNO\t\tNULL\t\napt_id\tint\tNO\t\tNULL\t\nscore\tvarchar(50)\tNO\t\tNULL\t\ntransport_score\tvarchar(50)\tNO\t\tNULL\t\ninvestment_score\tvarchar(50)\tNO\t\tNULL\t\ntrend_score\tvarchar(50)\tNO\t\tNULL\t\nexplanation\ttext\tYES\t\tNULL\t\ncreated_at\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\t\n",
+  "stderr": "",
+  "execution_time_ms": 1562
+}

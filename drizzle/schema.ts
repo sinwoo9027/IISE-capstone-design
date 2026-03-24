@@ -112,6 +112,10 @@ export const recommendations = mysqlTable("recommendations", {
   transportScore: varchar("transport_score", { length: 50 }).notNull(),
   investmentScore: varchar("investment_score", { length: 50 }).notNull(),
   trendScore: varchar("trend_score", { length: 50 }).notNull(),
+  scaleScore: varchar("scale_score", { length: 50 }),
+  rebuildScore: varchar("rebuild_score", { length: 50 }),
+  priceTrendScore: varchar("price_trend_score", { length: 50 }),
+  jeonseRatioScore: varchar("jeonse_ratio_score", { length: 50 }),
   explanation: text("explanation"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

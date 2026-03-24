@@ -1,0 +1,90 @@
+{
+  "query": "SELECT a.id, a.apt_name, a.sigungu, a.dong, MAX(CAST(t.price_krw AS UNSIGNED)) as max_price, MAX(CAST(t.area_m2 AS DECIMAL(10,2))) as max_area FROM apartments a LEFT JOIN transactions t ON a.id = t.apt_id WHERE CAST(t.price_krw AS UNSIGNED) <= 5000000000 AND CAST(t.area_m2 AS DECIMAL(10,2)) >= 60 GROUP BY a.id LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 45SeMPVVWbWtu9a.7862c7fde036 --database Q77QHiwVKcvLETyWsxWgjH --execute SELECT a.id, a.apt_name, a.sigungu, a.dong, MAX(CAST(t.price_krw AS UNSIGNED)) as max_price, MAX(CAST(t.area_m2 AS DECIMAL(10,2))) as max_area FROM apartments a LEFT JOIN transactions t ON a.id = t.apt_id WHERE CAST(t.price_krw AS UNSIGNED) <= 5000000000 AND CAST(t.area_m2 AS DECIMAL(10,2)) >= 60 GROUP BY a.id LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "apt_name": "강남 래미안 클래식",
+      "sigungu": "강남구",
+      "dong": "강남동",
+      "max_price": "935695931",
+      "max_area": "74.85"
+    },
+    {
+      "id": "2",
+      "apt_name": "강남 현대 아파트",
+      "sigungu": "강남구",
+      "dong": "역삼동",
+      "max_price": "751031231",
+      "max_area": "74.85"
+    },
+    {
+      "id": "3",
+      "apt_name": "강남 삼성 프리미엄",
+      "sigungu": "강남구",
+      "dong": "삼성동",
+      "max_price": "1287532676",
+      "max_area": "84.95"
+    },
+    {
+      "id": "4",
+      "apt_name": "강남 대치 럭셔리",
+      "sigungu": "강남구",
+      "dong": "대치동",
+      "max_price": "941517843",
+      "max_area": "84.95"
+    },
+    {
+      "id": "5",
+      "apt_name": "강남 논현 하이엔드",
+      "sigungu": "강남구",
+      "dong": "논현동",
+      "max_price": "743470892",
+      "max_area": "84.95"
+    },
+    {
+      "id": "6",
+      "apt_name": "서초 래미안 센트럴",
+      "sigungu": "서초구",
+      "dong": "서초동",
+      "max_price": "1291882264",
+      "max_area": "84.95"
+    },
+    {
+      "id": "7",
+      "apt_name": "서초 반포 프리미엄",
+      "sigungu": "서초구",
+      "dong": "반포동",
+      "max_price": "929669662",
+      "max_area": "84.95"
+    },
+    {
+      "id": "8",
+      "apt_name": "서초 방배 클래식",
+      "sigungu": "서초구",
+      "dong": "방배동",
+      "max_price": "745034244",
+      "max_area": "74.85"
+    },
+    {
+      "id": "9",
+      "apt_name": "종로 광화문 프리미엄",
+      "sigungu": "종로구",
+      "dong": "광화문",
+      "max_price": "1267635379",
+      "max_area": "84.95"
+    },
+    {
+      "id": "10",
+      "apt_name": "종로 종로3가 클래식",
+      "sigungu": "종로구",
+      "dong": "종로1가",
+      "max_price": "968913718",
+      "max_area": "84.95"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tapt_name\tsigungu\tdong\tmax_price\tmax_area\n1\t강남 래미안 클래식\t강남구\t강남동\t935695931\t74.85\n2\t강남 현대 아파트\t강남구\t역삼동\t751031231\t74.85\n3\t강남 삼성 프리미엄\t강남구\t삼성동\t1287532676\t84.95\n4\t강남 대치 럭셔리\t강남구\t대치동\t941517843\t84.95\n5\t강남 논현 하이엔드\t강남구\t논현동\t743470892\t84.95\n6\t서초 래미안 센트럴\t서초구\t서초동\t1291882264\t84.95\n7\t서초 반포 프리미엄\t서초구\t반포동\t929669662\t84.95\n8\t서초 방배 클래식\t서초구\t방배동\t745034244\t74.85\n9\t종로 광화문 프리미엄\t종로구\t광화문\t1267635379\t84.95\n10\t종로 종로3가 클래식\t종로구\t종로1가\t968913718\t84.95\n",
+  "stderr": "",
+  "execution_time_ms": 1595
+}

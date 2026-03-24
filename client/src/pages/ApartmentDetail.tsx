@@ -16,6 +16,10 @@ import {
   ExternalLink,
   CheckCircle2,
   AlertTriangle,
+  Newspaper,
+  Sparkles,
+  Globe,
+  BarChart3,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useRoute, useLocation } from "wouter";
@@ -51,6 +55,30 @@ function ScoreGauge({ label, score, icon }: { label: string; score: number; icon
   );
 }
 
+/** 감성 태그 컴포넌트 */
+function SentimentTag({ tag, sentiment }: { tag: string; sentiment: string }) {
+  const colorMap: Record<string, string> = {
+    positive: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800",
+    neutral: "bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-900/30 dark:text-slate-400 dark:border-slate-700",
+    caution: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800",
+  };
+
+  const iconMap: Record<string, string> = {
+    positive: "+",
+    neutral: "·",
+    caution: "!",
+  };
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border font-medium ${colorMap[sentiment] || colorMap.neutral}`}
+    >
+      <span className="font-bold">{iconMap[sentiment] || "·"}</span>
+      {tag}
+    </span>
+  );
+}
+
 export default function ApartmentDetail() {
   const [, params] = useRoute("/apartment/:id");
   const [, navigate] = useLocation();
@@ -77,8 +105,9 @@ export default function ApartmentDetail() {
             </div>
           </div>
         </header>
-        <div className="flex h-[60vh] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin" />
+        <div className="flex flex-col h-[60vh] items-center justify-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-accent" />
+          <p className="text-sm text-muted-foreground">실시간 데이터를 수집하고 있습니다...</p>
         </div>
       </div>
     );
@@ -115,6 +144,8 @@ export default function ApartmentDetail() {
   const stations = data.subwayStations || [];
   const news = data.news || [];
   const rebuildStatus = data.rebuildStatus;
+  const newsAnalysis = data.newsAnalysis;
+  const regionTrendData = data.regionTrendData;
 
   // 최신 거래가
   const latestPrice = txs.length > 0 ? parseInt(txs[0].priceKrw) : 0;
@@ -178,20 +209,80 @@ export default function ApartmentDetail() {
           </section>
         )}
 
-        {/* ==================== 3. 투자 포인트 vs 유의 포인트 ==================== */}
+        {/* ==================== 3. AI 뉴스 분석 (NEW) ==================== */}
+        {newsAnalysis && (
+          <section className="mb-8">
+            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-accent" />
+              AI 뉴스 분석
+            </h2>
+
+            {/* 요약 */}
+            <Card className="p-5 border-foreground/5 mb-4">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Sparkles className="h-4 w-4 text-accent" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold mb-2">핵심 요약</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                    {newsAnalysis.summary}
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* 감성 태그 */}
+            {newsAnalysis.sentimentTags && newsAnalysis.sentimentTags.length > 0 && (
+              <div className="mb-4">
+                <h3 className="text-sm font-bold mb-3 flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4" />
+                  키워드 감성 분석
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {newsAnalysis.sentimentTags.map((item: any, idx: number) => (
+                    <SentimentTag key={idx} tag={item.tag} sentiment={item.sentiment} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* ==================== 4. 지역 동향 (NEW) ==================== */}
+        {regionTrendData && regionTrendData.trend && (
+          <section className="mb-8">
+            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+              <Globe className="h-5 w-5 text-accent" />
+              {apt.sigungu} 지역 동향
+            </h2>
+            <Card className="p-5 border-foreground/5">
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {regionTrendData.trend}
+              </p>
+              {regionTrendData.newsCount > 0 && (
+                <p className="text-xs text-muted-foreground/60 mt-3">
+                  최근 뉴스 {regionTrendData.newsCount}건 기반 분석
+                </p>
+              )}
+            </Card>
+          </section>
+        )}
+
+        {/* ==================== 5. 투자 포인트 vs 유의 포인트 ==================== */}
         {insights && (
           <section className="mb-8">
             <div className="grid grid-cols-2 gap-4">
               {/* 투자 포인트 */}
               <Card className="p-5 border-foreground/5">
-                <h3 className="text-sm font-bold mb-3 flex items-center gap-2 text-green-700">
+                <h3 className="text-sm font-bold mb-3 flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
                   <CheckCircle2 className="h-4 w-4" />
                   투자 포인트
                 </h3>
                 <ul className="space-y-2">
                   {insights.investmentPoints.map((point: string, i: number) => (
                     <li key={i} className="text-xs text-muted-foreground leading-relaxed flex gap-2">
-                      <span className="text-green-600 flex-shrink-0 mt-0.5">+</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5 font-bold">+</span>
                       {point}
                     </li>
                   ))}
@@ -200,14 +291,14 @@ export default function ApartmentDetail() {
 
               {/* 유의 포인트 */}
               <Card className="p-5 border-foreground/5">
-                <h3 className="text-sm font-bold mb-3 flex items-center gap-2 text-amber-700">
+                <h3 className="text-sm font-bold mb-3 flex items-center gap-2 text-amber-600 dark:text-amber-400">
                   <AlertTriangle className="h-4 w-4" />
                   유의 포인트
                 </h3>
                 <ul className="space-y-2">
                   {insights.cautionPoints.map((point: string, i: number) => (
                     <li key={i} className="text-xs text-muted-foreground leading-relaxed flex gap-2">
-                      <span className="text-amber-600 flex-shrink-0 mt-0.5">!</span>
+                      <span className="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5 font-bold">!</span>
                       {point}
                     </li>
                   ))}
@@ -217,7 +308,7 @@ export default function ApartmentDetail() {
           </section>
         )}
 
-        {/* ==================== 4. 기본 정보 ==================== */}
+        {/* ==================== 6. 기본 정보 ==================== */}
         <section className="mb-8">
           <h2 className="text-lg font-bold mb-4">기본 정보</h2>
           <Card className="p-5 border-foreground/5">
@@ -254,7 +345,7 @@ export default function ApartmentDetail() {
           </Card>
         </section>
 
-        {/* ==================== 5. 입지/생활 분위기 ==================== */}
+        {/* ==================== 7. 입지/생활 분위기 ==================== */}
         {insights?.locationVibe && (
           <section className="mb-8">
             <h2 className="text-lg font-bold mb-4">입지 분위기</h2>
@@ -264,13 +355,13 @@ export default function ApartmentDetail() {
           </section>
         )}
 
-        {/* ==================== 6. 주변 지하철역 ==================== */}
+        {/* ==================== 8. 주변 지하철역 ==================== */}
         {stations.length > 0 && (
           <section className="mb-8">
             <h2 className="text-lg font-bold mb-4">주변 지하철역</h2>
             <Card className="p-5 border-foreground/5">
               <div className="space-y-3">
-                {stations.slice(0, 8).map((station: any, idx: number) => (
+                {stations.slice(0, 5).map((station: any, idx: number) => (
                   <div key={idx} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center">
@@ -294,7 +385,7 @@ export default function ApartmentDetail() {
           </section>
         )}
 
-        {/* ==================== 7. 최근 거래 내역 ==================== */}
+        {/* ==================== 9. 최근 거래 내역 ==================== */}
         {txs.length > 0 && (
           <section className="mb-8">
             <h2 className="text-lg font-bold mb-4">최근 거래 내역</h2>
@@ -325,7 +416,7 @@ export default function ApartmentDetail() {
           </section>
         )}
 
-        {/* ==================== 8. 재건축 현황 ==================== */}
+        {/* ==================== 10. 재건축 현황 ==================== */}
         {rebuildStatus && (
           <section className="mb-8">
             <h2 className="text-lg font-bold mb-4">재건축 현황</h2>
@@ -349,67 +440,53 @@ export default function ApartmentDetail() {
           </section>
         )}
 
-        {/* ==================== 9. 뉴스 및 키워드 ==================== */}
-        {(news.length > 0 || (insights?.newsKeywords && insights.newsKeywords.length > 0)) && (
+        {/* ==================== 11. 실시간 뉴스 (네이버 뉴스 API) ==================== */}
+        {news.length > 0 && (
           <section className="mb-8">
-            <h2 className="text-lg font-bold mb-4">관련 뉴스</h2>
+            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+              <Newspaper className="h-5 w-5 text-accent" />
+              실시간 뉴스
+            </h2>
 
-            {/* 이슈 요약 */}
-            {insights?.issuesSummary && (
-              <Card className="p-5 border-foreground/5 mb-4">
-                <h3 className="text-sm font-bold mb-2">이슈 요약</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{insights.issuesSummary}</p>
-              </Card>
-            )}
-
-            {/* 키워드 태그 */}
-            {insights?.newsKeywords && insights.newsKeywords.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {insights.newsKeywords.map((kw: any, idx: number) => {
-                  const colorMap: Record<string, string> = {
-                    positive: "bg-green-50 text-green-700 border-green-200",
-                    neutral: "bg-gray-50 text-gray-700 border-gray-200",
-                    caution: "bg-amber-50 text-amber-700 border-amber-200",
-                  };
-                  return (
-                    <span
-                      key={idx}
-                      className={`text-xs px-2.5 py-1 rounded-full border font-medium ${colorMap[kw.sentiment] || colorMap.neutral}`}
+            <Card className="p-5 border-foreground/5">
+              <div className="space-y-4">
+                {news.slice(0, 8).map((item: any, idx: number) => (
+                  <div key={idx} className="group">
+                    <a
+                      href={item.originalLink || item.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block hover:bg-muted/50 -mx-2 px-2 py-2 rounded-lg transition-colors"
                     >
-                      {kw.tag}
-                    </span>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* 뉴스 목록 */}
-            {news.length > 0 && (
-              <Card className="p-5 border-foreground/5">
-                <div className="space-y-3">
-                  {news.slice(0, 5).map((item: any, idx: number) => (
-                    <div key={idx} className="flex items-start justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{item.title}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {item.source} · {item.publishDate ? new Date(item.publishDate).toLocaleDateString("ko-KR") : ""}
-                        </p>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium leading-snug group-hover:text-accent transition-colors">
+                            {item.title}
+                          </p>
+                          {item.description && (
+                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">
+                              {item.description}
+                            </p>
+                          )}
+                          <p className="text-[11px] text-muted-foreground/60 mt-1.5">
+                            {item.source}
+                            {item.publishDate && ` · ${new Date(item.publishDate).toLocaleDateString("ko-KR", { year: "numeric", month: "short", day: "numeric" })}`}
+                          </p>
+                        </div>
+                        <ExternalLink className="h-4 w-4 text-muted-foreground/40 group-hover:text-accent flex-shrink-0 mt-1 transition-colors" />
                       </div>
-                      {item.link && (
-                        <a
-                          href={item.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex-shrink-0 text-muted-foreground hover:text-accent"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            )}
+                    </a>
+                    {idx < Math.min(news.length - 1, 7) && (
+                      <div className="border-b border-foreground/5 mt-2" />
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <p className="text-[10px] text-muted-foreground/40 mt-4 text-right">
+                네이버 뉴스 검색 API 제공
+              </p>
+            </Card>
           </section>
         )}
 
@@ -417,6 +494,9 @@ export default function ApartmentDetail() {
         <div className="text-center py-8 border-t border-foreground/5">
           <p className="text-xs text-muted-foreground">
             본 정보는 투자 조언이 아닌 참고 자료입니다. 실제 투자 결정 시 전문가 상담을 권장합니다.
+          </p>
+          <p className="text-[10px] text-muted-foreground/40 mt-1">
+            뉴스 데이터: 네이버 뉴스 검색 API · AI 분석: LLM 기반 자동 요약
           </p>
         </div>
       </main>

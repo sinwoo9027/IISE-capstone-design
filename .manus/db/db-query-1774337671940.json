@@ -1,0 +1,50 @@
+{
+  "query": "SELECT id, apt_name, sigungu, dong, built_year, households FROM apartments LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 45SeMPVVWbWtu9a.7862c7fde036 --database Q77QHiwVKcvLETyWsxWgjH --execute SELECT id, apt_name, sigungu, dong, built_year, households FROM apartments LIMIT 5;",
+  "rows": [
+    {
+      "id": "1",
+      "apt_name": "강남 래미안 클래식",
+      "sigungu": "강남구",
+      "dong": "강남동",
+      "built_year": "2008",
+      "households": "450"
+    },
+    {
+      "id": "2",
+      "apt_name": "강남 현대 아파트",
+      "sigungu": "강남구",
+      "dong": "역삼동",
+      "built_year": "2012",
+      "households": "320"
+    },
+    {
+      "id": "3",
+      "apt_name": "강남 삼성 프리미엄",
+      "sigungu": "강남구",
+      "dong": "삼성동",
+      "built_year": "2015",
+      "households": "280"
+    },
+    {
+      "id": "4",
+      "apt_name": "강남 대치 럭셔리",
+      "sigungu": "강남구",
+      "dong": "대치동",
+      "built_year": "2010",
+      "households": "400"
+    },
+    {
+      "id": "5",
+      "apt_name": "강남 논현 하이엔드",
+      "sigungu": "강남구",
+      "dong": "논현동",
+      "built_year": "2018",
+      "households": "250"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tapt_name\tsigungu\tdong\tbuilt_year\thouseholds\n1\t강남 래미안 클래식\t강남구\t강남동\t2008\t450\n2\t강남 현대 아파트\t강남구\t역삼동\t2012\t320\n3\t강남 삼성 프리미엄\t강남구\t삼성동\t2015\t280\n4\t강남 대치 럭셔리\t강남구\t대치동\t2010\t400\n5\t강남 논현 하이엔드\t강남구\t논현동\t2018\t250\n",
+  "stderr": "",
+  "execution_time_ms": 1532
+}

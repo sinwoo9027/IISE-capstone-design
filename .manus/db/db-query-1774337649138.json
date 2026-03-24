@@ -1,0 +1,30 @@
+{
+  "query": "SELECT 'apartments' as tbl, COUNT(*) as cnt FROM apartments UNION ALL SELECT 'transactions', COUNT(*) FROM transactions UNION ALL SELECT 'subway_stations', COUNT(*) FROM subway_stations UNION ALL SELECT 'news_info', COUNT(*) FROM news_info UNION ALL SELECT 'rebuild_status_current', COUNT(*) FROM rebuild_status_current;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 45SeMPVVWbWtu9a.7862c7fde036 --database Q77QHiwVKcvLETyWsxWgjH --execute SELECT 'apartments' as tbl, COUNT(*) as cnt FROM apartments UNION ALL SELECT 'transactions', COUNT(*) FROM transactions UNION ALL SELECT 'subway_stations', COUNT(*) FROM subway_stations UNION ALL SELECT 'news_info', COUNT(*) FROM news_info UNION ALL SELECT 'rebuild_status_current', COUNT(*) FROM rebuild_status_current;",
+  "rows": [
+    {
+      "tbl": "apartments",
+      "cnt": "42"
+    },
+    {
+      "tbl": "rebuild_status_current",
+      "cnt": "8"
+    },
+    {
+      "tbl": "news_info",
+      "cnt": "17"
+    },
+    {
+      "tbl": "transactions",
+      "cnt": "504"
+    },
+    {
+      "tbl": "subway_stations",
+      "cnt": "783"
+    }
+  ],
+  "messages": [],
+  "stdout": "tbl\tcnt\napartments\t42\nrebuild_status_current\t8\nnews_info\t17\ntransactions\t504\nsubway_stations\t783\n",
+  "stderr": "",
+  "execution_time_ms": 1630
+}

@@ -11,7 +11,6 @@ import {
   saveRecommendation,
   getApartmentById,
   getUserRecommendations,
-  getApartmentNews,
   getApartmentRebuildStatus,
 } from "./db";
 import { calculateDistance } from "./recommender";
@@ -42,6 +41,12 @@ import {
 } from "./apartment-insights";
 import { createCheckoutSession } from "./stripe";
 import { invokeLLM } from "./_core/llm";
+import {
+  getApartmentNews as getApartmentNewsLive,
+  getNewsAnalysis,
+  getRegionTrendAnalysis,
+} from "./news-service";
+import { fetchRecentTrades, isRealTradeApiAvailable } from "./api-realtrade";
 
 export const appRouter = router({
   system: systemRouter,
@@ -78,14 +83,12 @@ export const appRouter = router({
             return { success: false, error: "예산과 면적을 올바르게 입력해주세요.", recommendations: [] };
           }
 
-          // 1. Hard Filter: DB에서 예산/면적 조건에 맞는 아파트 조회
           const filteredApts = await getFilteredApartments({ maxPriceKrw: budgetKrw, minAreaM2 });
 
           if (filteredApts.length === 0) {
             return { success: false, error: "조건에 맞는 아파트가 없습니다. 예산이나 면적을 조정해주세요.", recommendations: [] };
           }
 
-          // 2. Soft Scoring: 5개 지표 계산
           const transportImportance = input.transportImportance as 1 | 2 | 3 | 4 | 5;
 
           const scoredApts = await Promise.all(
@@ -100,7 +103,6 @@ export const appRouter = router({
                   getApartmentRebuildStatus(apt.id),
                 ]);
 
-                // 지하철역 거리 계산
                 const subwayInfo: SubwayStationForScoring[] = stations.map((s) => ({
                   station_name: s.stationName,
                   line: s.line,
@@ -111,13 +113,11 @@ export const appRouter = router({
                   is_transfer: (s.isTransfer ?? 0) === 1,
                 }));
 
-                // 거래 데이터 변환
                 const txData: TransactionForScoring[] = txs.map((t) => ({
                   contract_date: t.contractDate,
                   price_krw: parseInt(t.priceKrw),
                 }));
 
-                // 재건축 데이터 변환
                 const rebuildData: RebuildStatusForScoring | undefined = rebuildStatus
                   ? {
                       is_rebuild_candidate: (rebuildStatus.isRebuildCandidate ?? 0) === 1,
@@ -125,7 +125,6 @@ export const appRouter = router({
                     }
                   : undefined;
 
-                // 5개 지표 계산
                 const scores = {
                   transport: scoreTransport(subwayInfo, transportImportance),
                   scale: scoreScale(apt.households ?? 0),
@@ -134,14 +133,12 @@ export const appRouter = router({
                   jeonseRatio: scoreJeonseRatio(item.latestPrice || 0),
                 };
 
-                // 최종 점수
                 const finalScore = calculateFinalScore(
                   scores,
                   input.investmentType,
                   transportImportance
                 );
 
-                // 자연어 설명 생성
                 const explanation = generateExplanation(
                   {
                     apartment: {
@@ -178,7 +175,6 @@ export const appRouter = router({
                   reprAreaM2: apt.reprAreaM2,
                   latestPrice: item.latestPrice || 0,
                   latestArea: item.latestArea || 0,
-                  // 5개 지표 점수
                   scores: {
                     transport: Math.round(scores.transport),
                     scale: Math.round(scores.scale),
@@ -212,7 +208,6 @@ export const appRouter = router({
             return { success: false, error: "추천 계산 중 오류가 발생했습니다.", recommendations: [] };
           }
 
-          // 3. Save preference
           await saveUserPreference(ctx.user.id, {
             budget: input.budget,
             minArea: input.minArea,
@@ -221,7 +216,6 @@ export const appRouter = router({
             preferredSigungu: input.preferredSigungu,
           });
 
-          // 4. Save recommendations
           for (const apt of validApts) {
             await saveRecommendation({
               userId: ctx.user.id,
@@ -259,7 +253,7 @@ export const appRouter = router({
     }),
 
     /**
-     * 상세 페이지 API - 비정형 정보 포함
+     * 상세 페이지 API - 실시간 뉴스 + LLM 분석 포함
      */
     getApartmentDetail: publicProcedure
       .input(z.object({ aptId: z.number() }))
@@ -275,13 +269,22 @@ export const appRouter = router({
               news: [],
               rebuildStatus: null,
               insights: null,
+              newsAnalysis: null,
+              regionTrendData: null,
             };
 
-          const [txs, stations, news, rebuildStatus] = await Promise.all([
+          // 실시간 네이버 뉴스 API + DB 데이터 병렬 조회
+          const [txs, stations, liveNews, rebuildStatus] = await Promise.all([
             getApartmentTransactions(input.aptId),
             getNearbySubwayStations(parseFloat(apt.lat), parseFloat(apt.lng)),
-            getApartmentNews(input.aptId),
+            getApartmentNewsLive(input.aptId, apt.aptName, apt.sigungu, apt.dong, 10),
             getApartmentRebuildStatus(input.aptId),
+          ]);
+
+          // LLM 뉴스 분석 (비동기, 캐시 우선)
+          const [newsAnalysisResult, regionTrend] = await Promise.all([
+            getNewsAnalysis(input.aptId, apt.aptName, apt.sigungu, apt.dong, liveNews),
+            getRegionTrendAnalysis(apt.sigungu),
           ]);
 
           // apartment-insights.ts 인터페이스에 맞게 데이터 변환
@@ -310,11 +313,12 @@ export const appRouter = router({
             areaM2: t.areaM2,
           }));
 
-          const newsData: NewsData[] = news.map((n) => ({
-            title: typeof n.title === "string" ? n.title : "",
+          // 실시간 뉴스를 insights 형식으로 변환
+          const newsData: NewsData[] = liveNews.map((n) => ({
+            title: n.title,
             source: n.source || "",
-            publishDate: n.publishDate ? n.publishDate.toISOString() : "",
-            link: typeof n.link === "string" ? n.link : "",
+            publishDate: n.publishDate || "",
+            link: n.link || "",
           }));
 
           const rebuildData: RebuildData = {
@@ -322,7 +326,7 @@ export const appRouter = router({
             isRebuildCandidate: (rebuildStatus?.isRebuildCandidate ?? 0) === 1,
           };
 
-          // 5개 지표 점수 계산 (상세 페이지에서도 표시)
+          // 5개 지표 점수 계산
           const subwayForScoring: SubwayStationForScoring[] = stations.map((s) => ({
             station_name: s.stationName,
             line: s.line,
@@ -371,10 +375,28 @@ export const appRouter = router({
                 calculateDistance(parseFloat(apt.lat), parseFloat(apt.lng), parseFloat(s.lat), parseFloat(s.lng)) * 1000
               ),
             })),
-            news,
+            news: liveNews.map((n) => ({
+              title: n.title,
+              link: n.link,
+              originalLink: n.originalLink,
+              description: n.description,
+              publishDate: n.publishDate,
+              source: n.source,
+            })),
             rebuildStatus,
             scores: detailScores,
             insights,
+            // 새로 추가: LLM 뉴스 분석 결과
+            newsAnalysis: {
+              summary: newsAnalysisResult.summary,
+              sentimentTags: newsAnalysisResult.sentimentTags,
+              regionTrend: newsAnalysisResult.regionTrend,
+            },
+            // 새로 추가: 지역 동향 데이터
+            regionTrendData: {
+              trend: regionTrend.trend,
+              newsCount: regionTrend.news.length,
+            },
           };
         } catch (error) {
           console.error("[Recommendations] Error fetching detail:", error);
@@ -387,12 +409,14 @@ export const appRouter = router({
             rebuildStatus: null,
             scores: null,
             insights: null,
+            newsAnalysis: null,
+            regionTrendData: null,
           };
         }
       }),
 
     /**
-     * LLM 기반 추천 이유 설명
+     * LLM 기반 추천 이유 설명 - 실시간 뉴스 포함
      */
     explainRecommendation: protectedProcedure
       .input(
@@ -406,10 +430,10 @@ export const appRouter = router({
           const apt = await getApartmentById(input.aptId);
           if (!apt) return { success: false, explanation: "아파트 정보를 찾을 수 없습니다." };
 
-          const [txs, stations, news, rebuildStatus] = await Promise.all([
+          const [txs, stations, liveNews, rebuildStatus] = await Promise.all([
             getApartmentTransactions(input.aptId),
             getNearbySubwayStations(parseFloat(apt.lat), parseFloat(apt.lng)),
-            getApartmentNews(input.aptId),
+            getApartmentNewsLive(input.aptId, apt.aptName, apt.sigungu, apt.dong, 5),
             getApartmentRebuildStatus(input.aptId),
           ]);
 
@@ -434,7 +458,7 @@ export const appRouter = router({
 거래 건수: ${txs.length}건
 주변 지하철: ${subwayInfo.slice(0, 3).map((s) => `${s.name}(${s.line}, ${s.distanceM}m)`).join(", ") || "없음"}
 재건축 현황: ${rebuildStatus ? rebuildStatus.stage : "해당 없음"}
-관련 뉴스: ${news.slice(0, 3).map((n) => n.title).join("; ") || "없음"}`;
+관련 최신 뉴스: ${liveNews.slice(0, 3).map((n) => `[${n.source}] ${n.title}`).join("; ") || "없음"}`;
 
           const userMsg = input.userQuestion || "이 아파트를 왜 추천했나요? 점수 계산 근거를 설명해주세요.";
 
@@ -452,6 +476,14 @@ export const appRouter = router({
           return { success: false, explanation: "AI 설명 생성 중 오류가 발생했습니다." };
         }
       }),
+
+    /**
+     * 실거래가 API 상태 확인
+     */
+    checkRealTradeApi: publicProcedure.query(async () => {
+      const available = await isRealTradeApiAvailable();
+      return { available };
+    }),
   }),
 
   payments: router({

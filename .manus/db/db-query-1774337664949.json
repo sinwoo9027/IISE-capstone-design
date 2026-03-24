@@ -1,0 +1,45 @@
+{
+  "query": "SELECT t.id, a.apt_name, t.contract_date, t.price_krw, t.area_m2 FROM transactions t JOIN apartments a ON t.apt_id = a.id LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 45SeMPVVWbWtu9a.7862c7fde036 --database Q77QHiwVKcvLETyWsxWgjH --execute SELECT t.id, a.apt_name, t.contract_date, t.price_krw, t.area_m2 FROM transactions t JOIN apartments a ON t.apt_id = a.id LIMIT 5;",
+  "rows": [
+    {
+      "id": "385",
+      "apt_name": "중구 서울역 센트럴",
+      "contract_date": "2025-07-01",
+      "price_krw": "1224843226",
+      "area_m2": "59.94"
+    },
+    {
+      "id": "386",
+      "apt_name": "중구 서울역 센트럴",
+      "contract_date": "2025-08-01",
+      "price_krw": "1184933527",
+      "area_m2": "69.93"
+    },
+    {
+      "id": "387",
+      "apt_name": "중구 서울역 센트럴",
+      "contract_date": "2025-06-01",
+      "price_krw": "1146137961",
+      "area_m2": "74.85"
+    },
+    {
+      "id": "388",
+      "apt_name": "중구 서울역 센트럴",
+      "contract_date": "2026-02-01",
+      "price_krw": "1263889233",
+      "area_m2": "49.95"
+    },
+    {
+      "id": "389",
+      "apt_name": "중구 서울역 센트럴",
+      "contract_date": "2025-09-01",
+      "price_krw": "1201032286",
+      "area_m2": "74.85"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tapt_name\tcontract_date\tprice_krw\tarea_m2\n385\t중구 서울역 센트럴\t2025-07-01\t1224843226\t59.94\n386\t중구 서울역 센트럴\t2025-08-01\t1184933527\t69.93\n387\t중구 서울역 센트럴\t2025-06-01\t1146137961\t74.85\n388\t중구 서울역 센트럴\t2026-02-01\t1263889233\t49.95\n389\t중구 서울역 센트럴\t2025-09-01\t1201032286\t74.85\n",
+  "stderr": "",
+  "execution_time_ms": 1572
+}

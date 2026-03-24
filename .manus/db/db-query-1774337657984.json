@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, title, source, link, publish_date FROM news_info LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 45SeMPVVWbWtu9a.7862c7fde036 --database Q77QHiwVKcvLETyWsxWgjH --execute SELECT id, title, source, link, publish_date FROM news_info LIMIT 5;",
+  "rows": [
+    {
+      "id": "1",
+      "title": "강남 래미안 대치팰리스 재건축 추진위 구성",
+      "source": "한국경제",
+      "link": "https://example.com/news1",
+      "publish_date": "2026-01-15 00:00:00"
+    },
+    {
+      "id": "2",
+      "title": "강남 아파트 실거래가 반등 조짐",
+      "source": "매일경제",
+      "link": "https://example.com/news2",
+      "publish_date": "2026-02-10 00:00:00"
+    },
+    {
+      "id": "3",
+      "title": "GTX-A 수서역 개통 임박 강남 접근성 향상",
+      "source": "조선일보",
+      "link": "https://example.com/news3",
+      "publish_date": "2026-03-01 00:00:00"
+    },
+    {
+      "id": "4",
+      "title": "서초구 반포동 일대 개발 호재",
+      "source": "중앙일보",
+      "link": "https://example.com/news4",
+      "publish_date": "2026-01-20 00:00:00"
+    },
+    {
+      "id": "5",
+      "title": "서초구 아파트 거래량 감소세 거래 위축",
+      "source": "한겨레",
+      "link": "https://example.com/news5",
+      "publish_date": "2026-02-15 00:00:00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tsource\tlink\tpublish_date\n1\t강남 래미안 대치팰리스 재건축 추진위 구성\t한국경제\thttps://example.com/news1\t2026-01-15 00:00:00\n2\t강남 아파트 실거래가 반등 조짐\t매일경제\thttps://example.com/news2\t2026-02-10 00:00:00\n3\tGTX-A 수서역 개통 임박 강남 접근성 향상\t조선일보\thttps://example.com/news3\t2026-03-01 00:00:00\n4\t서초구 반포동 일대 개발 호재\t중앙일보\thttps://example.com/news4\t2026-01-20 00:00:00\n5\t서초구 아파트 거래량 감소세 거래 위축\t한겨레\thttps://example.com/news5\t2026-02-15 00:00:00\n",
+  "stderr": "",
+  "execution_time_ms": 1585
+}

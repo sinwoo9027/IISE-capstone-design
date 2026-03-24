@@ -280,3 +280,50 @@ export const dataEvidence = mysqlTable(
 
 export type DataEvidence = typeof dataEvidence.$inferSelect;
 export type InsertDataEvidence = typeof dataEvidence.$inferInsert;
+
+/**
+ * News_Cache table - 네이버 뉴스 API 캐싱 (24시간 TTL)
+ */
+export const newsCache = mysqlTable(
+  "news_cache",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    queryKey: varchar("query_key", { length: 255 }).notNull(), // "apt:{aptId}" or "region:{sigungu}"
+    title: text("title").notNull(),
+    link: text("link").notNull(),
+    originalLink: text("original_link"),
+    description: text("description"),
+    publishDate: timestamp("publish_date"),
+    source: varchar("source", { length: 100 }),
+    fetchedAt: timestamp("fetched_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    queryKeyIdx: index("news_cache_query_key_idx").on(table.queryKey),
+    fetchedAtIdx: index("news_cache_fetched_at_idx").on(table.fetchedAt),
+  })
+);
+
+export type NewsCache = typeof newsCache.$inferSelect;
+export type InsertNewsCache = typeof newsCache.$inferInsert;
+
+/**
+ * News_Analysis table - LLM 기반 뉴스 분석 결과 캐싱
+ */
+export const newsAnalysis = mysqlTable(
+  "news_analysis",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    queryKey: varchar("query_key", { length: 255 }).notNull().unique(), // "apt:{aptId}" or "region:{sigungu}"
+    summary: text("summary"),           // LLM 3줄 요약
+    sentimentTags: text("sentiment_tags"), // JSON: [{tag, sentiment}]
+    regionTrend: text("region_trend"),   // 지역 동향 텍스트
+    analyzedAt: timestamp("analyzed_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    queryKeyIdx: index("news_analysis_query_key_idx").on(table.queryKey),
+    analyzedAtIdx: index("news_analysis_analyzed_at_idx").on(table.analyzedAt),
+  })
+);
+
+export type NewsAnalysis = typeof newsAnalysis.$inferSelect;
+export type InsertNewsAnalysis = typeof newsAnalysis.$inferInsert;

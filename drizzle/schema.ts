@@ -156,3 +156,123 @@ export const payments = mysqlTable("payments", {
 
 export type Payment = typeof payments.$inferSelect;
 export type InsertPayment = typeof payments.$inferInsert;
+
+/**
+ * News_Info table - 최근 기사 정보
+ */
+export const newsInfo = mysqlTable(
+  "news_info",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    newsId: varchar("news_id", { length: 255 }).notNull().unique(),
+    title: text("title").notNull(),
+    summary: text("summary"),
+    link: text("link").notNull(),
+    originalLink: text("original_link"),
+    publishDate: timestamp("publish_date"),
+    source: varchar("source", { length: 100 }),
+    regionCode: varchar("region_code", { length: 50 }),
+    aptId: int("apt_id"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    aptIdIdx: index("news_apt_id_idx").on(table.aptId),
+    regionCodeIdx: index("news_region_code_idx").on(table.regionCode),
+    publishDateIdx: index("news_publish_date_idx").on(table.publishDate),
+  })
+);
+
+export type NewsInfo = typeof newsInfo.$inferSelect;
+export type InsertNewsInfo = typeof newsInfo.$inferInsert;
+
+/**
+ * News_Raw table - 원본 기사 데이터
+ */
+export const newsRaw = mysqlTable(
+  "news_raw",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    newsId: varchar("news_id", { length: 255 }).notNull(),
+    url: varchar("url", { length: 2048 }).notNull().unique(),
+    crawledAt: timestamp("crawled_at").defaultNow(),
+    contentText: text("content_text"),
+    checksum: varchar("checksum", { length: 64 }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    newsIdIdx: index("news_raw_news_id_idx").on(table.newsId),
+    checksumIdx: index("news_raw_checksum_idx").on(table.checksum),
+  })
+);
+
+export type NewsRaw = typeof newsRaw.$inferSelect;
+export type InsertNewsRaw = typeof newsRaw.$inferInsert;
+
+/**
+ * Rebuild_Status_Current table - 현재 재건축 현황
+ */
+export const rebuildStatusCurrent = mysqlTable(
+  "rebuild_status_current",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    aptId: int("apt_id").notNull().unique(),
+    isRebuildCandidate: int("is_rebuild_candidate").default(0),
+    stage: varchar("stage", { length: 50 }), // "추진위", "조합", "사업시행", "관리처분", "이주/철거", "착공", "준공"
+    stageUpdatedAt: timestamp("stage_updated_at"),
+    approvalDate: timestamp("approval_date"),
+    managementDisposalDate: timestamp("management_disposal_date"),
+    expectedHouseholds: int("expected_households"),
+    updatedDate: timestamp("updated_date").defaultNow().onUpdateNow().notNull(),
+  },
+  (table) => ({
+    aptIdIdx: index("rebuild_current_apt_id_idx").on(table.aptId),
+    stageIdx: index("rebuild_current_stage_idx").on(table.stage),
+  })
+);
+
+export type RebuildStatusCurrent = typeof rebuildStatusCurrent.$inferSelect;
+export type InsertRebuildStatusCurrent = typeof rebuildStatusCurrent.$inferInsert;
+
+/**
+ * Rebuild_Status_History table - 재건축 현황 이력
+ */
+export const rebuildStatusHistory = mysqlTable(
+  "rebuild_status_history",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    aptId: int("apt_id").notNull(),
+    stage: varchar("stage", { length: 50 }).notNull(),
+    effectiveFrom: timestamp("effective_from").notNull(),
+    effectiveTo: timestamp("effective_to"),
+    evidenceId: int("evidence_id"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    aptIdIdx: index("rebuild_history_apt_id_idx").on(table.aptId),
+    stageIdx: index("rebuild_history_stage_idx").on(table.stage),
+  })
+);
+
+export type RebuildStatusHistory = typeof rebuildStatusHistory.$inferSelect;
+export type InsertRebuildStatusHistory = typeof rebuildStatusHistory.$inferInsert;
+
+/**
+ * Data_Evidence table - 데이터 출처 및 증거
+ */
+export const dataEvidence = mysqlTable(
+  "data_evidence",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    sourceType: varchar("source_type", { length: 100 }).notNull(), // "news", "rebuild", "transaction", etc.
+    sourceUrl: text("source_url"),
+    collectedAt: timestamp("collected_at").defaultNow(),
+    rawPayload: text("raw_payload"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    sourceTypeIdx: index("evidence_source_type_idx").on(table.sourceType),
+  })
+);
+
+export type DataEvidence = typeof dataEvidence.$inferSelect;
+export type InsertDataEvidence = typeof dataEvidence.$inferInsert;

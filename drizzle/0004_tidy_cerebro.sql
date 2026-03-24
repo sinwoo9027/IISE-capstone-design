@@ -1,0 +1,1 @@
+ALTER TABLE `news_raw` MODIFY COLUMN `url` varchar(2048) NOT NULL;

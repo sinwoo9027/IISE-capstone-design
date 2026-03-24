@@ -1,0 +1,50 @@
+{
+  "query": "SELECT apt_name, sigungu, dong, lat, lng, built_year FROM apartments WHERE sigungu = '강남구' LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 45SeMPVVWbWtu9a.7862c7fde036 --database Q77QHiwVKcvLETyWsxWgjH --execute SELECT apt_name, sigungu, dong, lat, lng, built_year FROM apartments WHERE sigungu = '강남구' LIMIT 5;",
+  "rows": [
+    {
+      "apt_name": "SK허브프리모",
+      "sigungu": "강남구",
+      "dong": "도곡동",
+      "lat": "37.485268",
+      "lng": "127.034383",
+      "built_year": "2006"
+    },
+    {
+      "apt_name": "래미안대치팰리스",
+      "sigungu": "강남구",
+      "dong": "대치동",
+      "lat": "37.492577",
+      "lng": "127.058549",
+      "built_year": "2015"
+    },
+    {
+      "apt_name": "럭키(963)",
+      "sigungu": "강남구",
+      "dong": "도곡동",
+      "lat": "37.48859059999999",
+      "lng": "127.0452757",
+      "built_year": "1995"
+    },
+    {
+      "apt_name": "현대비젼21",
+      "sigungu": "강남구",
+      "dong": "도곡동",
+      "lat": "37.4873002",
+      "lng": "127.051556",
+      "built_year": "1999"
+    },
+    {
+      "apt_name": "한신(개포)",
+      "sigungu": "강남구",
+      "dong": "도곡동",
+      "lat": "37.48859059999999",
+      "lng": "127.0452757",
+      "built_year": "1985"
+    }
+  ],
+  "messages": [],
+  "stdout": "apt_name\tsigungu\tdong\tlat\tlng\tbuilt_year\nSK허브프리모\t강남구\t도곡동\t37.485268\t127.034383\t2006\n래미안대치팰리스\t강남구\t대치동\t37.492577\t127.058549\t2015\n럭키(963)\t강남구\t도곡동\t37.48859059999999\t127.0452757\t1995\n현대비젼21\t강남구\t도곡동\t37.4873002\t127.051556\t1999\n한신(개포)\t강남구\t도곡동\t37.48859059999999\t127.0452757\t1985\n",
+  "stderr": "",
+  "execution_time_ms": 1734
+}

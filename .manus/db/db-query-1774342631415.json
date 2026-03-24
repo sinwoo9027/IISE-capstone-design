@@ -1,0 +1,50 @@
+{
+  "query": "SELECT a.apt_name, a.sigungu, a.dong, t.contract_date, t.price_krw, t.area_m2 FROM transactions t JOIN apartments a ON t.apt_id = a.id ORDER BY t.contract_date DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 45SeMPVVWbWtu9a.7862c7fde036 --database Q77QHiwVKcvLETyWsxWgjH --execute SELECT a.apt_name, a.sigungu, a.dong, t.contract_date, t.price_krw, t.area_m2 FROM transactions t JOIN apartments a ON t.apt_id = a.id ORDER BY t.contract_date DESC LIMIT 5;",
+  "rows": [
+    {
+      "apt_name": "동아불암",
+      "sigungu": "노원구",
+      "dong": "상계동",
+      "contract_date": "2026-03-23",
+      "price_krw": "60800",
+      "area_m2": "84.9"
+    },
+    {
+      "apt_name": "스마트트라움",
+      "sigungu": "도봉구",
+      "dong": "창동",
+      "contract_date": "2026-03-23",
+      "price_krw": "16000",
+      "area_m2": "16.42"
+    },
+    {
+      "apt_name": "현대팰리스",
+      "sigungu": "광진구",
+      "dong": "구의동",
+      "contract_date": "2026-03-23",
+      "price_krw": "62300",
+      "area_m2": "78.5"
+    },
+    {
+      "apt_name": "우방",
+      "sigungu": "금천구",
+      "dong": "시흥동",
+      "contract_date": "2026-03-22",
+      "price_krw": "47700",
+      "area_m2": "59.91"
+    },
+    {
+      "apt_name": "독립문파크빌",
+      "sigungu": "서대문구",
+      "dong": "현저동",
+      "contract_date": "2026-03-22",
+      "price_krw": "62500",
+      "area_m2": "59.4"
+    }
+  ],
+  "messages": [],
+  "stdout": "apt_name\tsigungu\tdong\tcontract_date\tprice_krw\tarea_m2\n동아불암\t노원구\t상계동\t2026-03-23\t60800\t84.9\n스마트트라움\t도봉구\t창동\t2026-03-23\t16000\t16.42\n현대팰리스\t광진구\t구의동\t2026-03-23\t62300\t78.5\n우방\t금천구\t시흥동\t2026-03-22\t47700\t59.91\n독립문파크빌\t서대문구\t현저동\t2026-03-22\t62500\t59.4\n",
+  "stderr": "",
+  "execution_time_ms": 1640
+}

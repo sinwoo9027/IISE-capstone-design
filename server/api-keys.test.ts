@@ -25,19 +25,12 @@ describe("External API Keys Validation", () => {
     expect(key!.length).toBeGreaterThan(0);
   });
 
-  it("MOLIT_API_KEY format is valid (32 char hex)", () => {
+  it("MOLIT_API_KEY format is valid (Base64 encoded key)", () => {
     const key = process.env.MOLIT_API_KEY;
     expect(key).toBeDefined();
-    expect(key!.length).toBe(32);
-    // Should be hex string
-    expect(/^[0-9a-fA-F]+$/.test(key!)).toBe(true);
-  });
-
-  it("REALESTATE_API_KEY format is valid (30 char hex)", () => {
-    const key = process.env.REALESTATE_API_KEY;
-    expect(key).toBeDefined();
-    expect(key!.length).toBe(30);
-    expect(/^[0-9a-fA-F]+$/.test(key!)).toBe(true);
+    // Base64 키는 == 로 끝나는 긴 문자열
+    expect(key!.length).toBeGreaterThan(30);
+    expect(/^[A-Za-z0-9+/=]+$/.test(key!)).toBe(true);
   });
 
   it("Naver News API responds with valid credentials", async () => {

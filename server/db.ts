@@ -133,7 +133,9 @@ export async function getFilteredApartments(params: {
         apartments.reprAreaM2,
         apartments.createdAt,
         apartments.updatedAt
-      );
+      )
+      .orderBy(sql`COUNT(${transactions.id}) DESC`)
+      .limit(200);
 
     return result;
   } catch (error) {

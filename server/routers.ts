@@ -76,7 +76,10 @@ export const appRouter = router({
       )
       .mutation(async ({ ctx, input }) => {
         try {
-          const budgetKrw = parseInt(input.budget) * 100000000;
+          // DB의 price_krw는 만원 단위 (207000 = 20.7억)
+          // 사용자 입력은 억 원 단위 → 만원 단위로 변환: 15억 = 150000만원
+          const budgetManwon = parseInt(input.budget) * 10000;
+          const budgetKrw = budgetManwon; // 만원 단위로 DB 비교
           const minAreaM2 = parseInt(input.minArea);
 
           if (isNaN(budgetKrw) || isNaN(minAreaM2)) {
@@ -91,17 +94,23 @@ export const appRouter = router({
 
           const transportImportance = input.transportImportance as 1 | 2 | 3 | 4 | 5;
 
-          const scoredApts = await Promise.all(
-            filteredApts.map(async (item) => {
-              const apt = item.apt;
-              if (!apt) return null;
+          // 배치 처리: 동시에 10개씩 스코어링 (DB 과부하 방지)
+          const BATCH_SIZE = 10;
+          const allScoredApts: any[] = [];
+          
+          for (let i = 0; i < filteredApts.length; i += BATCH_SIZE) {
+            const batch = filteredApts.slice(i, i + BATCH_SIZE);
+            const batchResults = await Promise.all(
+              batch.map(async (item) => {
+                const apt = item.apt;
+                if (!apt) return null;
 
-              try {
-                const [txs, stations, rebuildStatus] = await Promise.all([
-                  getApartmentTransactions(apt.id),
-                  getNearbySubwayStations(parseFloat(apt.lat), parseFloat(apt.lng)),
-                  getApartmentRebuildStatus(apt.id),
-                ]);
+                try {
+                  const [txs, stations, rebuildStatus] = await Promise.all([
+                    getApartmentTransactions(apt.id),
+                    getNearbySubwayStations(parseFloat(apt.lat), parseFloat(apt.lng)),
+                    getApartmentRebuildStatus(apt.id),
+                  ]);
 
                 const subwayInfo: SubwayStationForScoring[] = stations.map((s) => ({
                   station_name: s.stationName,
@@ -145,7 +154,7 @@ export const appRouter = router({
                       apt_id: apt.id,
                       apt_name: apt.aptName,
                       region: `${apt.sigungu} ${apt.dong}`,
-                      price_krw: item.latestPrice || 0,
+                      price_krw: (item.latestPrice || 0) * 10000, // 만원→원 변환
                       area_m2: parseFloat(apt.reprAreaM2 ?? "0"),
                       built_year: apt.builtYear ?? 2000,
                       households: apt.households ?? 0,
@@ -173,7 +182,7 @@ export const appRouter = router({
                   builtYear: apt.builtYear,
                   households: apt.households,
                   reprAreaM2: apt.reprAreaM2,
-                  latestPrice: item.latestPrice || 0,
+                  latestPrice: (item.latestPrice || 0) * 10000, // 만원→원 변환
                   latestArea: item.latestArea || 0,
                   scores: {
                     transport: Math.round(scores.transport),
@@ -192,14 +201,16 @@ export const appRouter = router({
                   transactionCount: txs.length,
                   hasRebuild: !!rebuildData?.is_rebuild_candidate,
                 };
-              } catch (error) {
-                console.error(`[Recommender] Error scoring apartment ${apt.id}:`, error);
-                return null;
-              }
-            })
-          );
+                } catch (error) {
+                  console.error(`[Recommender] Error scoring apartment ${apt.id}:`, error);
+                  return null;
+                }
+              })
+            );
+            allScoredApts.push(...batchResults);
+          }
 
-          const validApts = scoredApts
+          const validApts = allScoredApts
             .filter((a): a is NonNullable<typeof a> => a !== null)
             .sort((a, b) => b.finalScore - a.finalScore)
             .slice(0, 5);
@@ -346,7 +357,7 @@ export const appRouter = router({
               }
             : undefined;
 
-          const latestPrice = txs.length > 0 ? parseInt(txs[0].priceKrw) : 0;
+          const latestPrice = txs.length > 0 ? parseInt(txs[0].priceKrw) : 0; // 만원 단위
 
           const detailScores = {
             transport: Math.round(scoreTransport(subwayForScoring, 3)),
@@ -454,7 +465,7 @@ export const appRouter = router({
 건축년도: ${apt.builtYear || "정보 없음"}
 세대수: ${apt.households || "정보 없음"}
 대표면적: ${apt.reprAreaM2 || "정보 없음"}㎡
-최근 거래가: ${txs.length > 0 ? (parseInt(txs[0].priceKrw) / 100000000).toFixed(1) + "억원" : "정보 없음"}
+최근 거래가: ${txs.length > 0 ? (parseInt(txs[0].priceKrw) / 10000).toFixed(1) + "억원" : "정보 없음"}
 거래 건수: ${txs.length}건
 주변 지하철: ${subwayInfo.slice(0, 3).map((s) => `${s.name}(${s.line}, ${s.distanceM}m)`).join(", ") || "없음"}
 재건축 현황: ${rebuildStatus ? rebuildStatus.stage : "해당 없음"}

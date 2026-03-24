@@ -149,7 +149,7 @@ export default function ApartmentDetail() {
 
   // 최신 거래가
   const latestPrice = txs.length > 0 ? parseInt(txs[0].priceKrw) : 0;
-  const priceDisplay = latestPrice > 0 ? `${(latestPrice / 100000000).toFixed(1)}억` : "정보 없음";
+  const priceDisplay = latestPrice > 0 ? `${(latestPrice / 10000).toFixed(1)}억` : "정보 없음"; // DB는 만원 단위
 
   return (
     <div className="min-h-screen bg-background">
@@ -404,7 +404,7 @@ export default function ApartmentDetail() {
                       <tr key={idx} className="border-b border-foreground/5 last:border-0">
                         <td className="py-2.5 text-sm">{tx.contractDate}</td>
                         <td className="py-2.5 text-sm text-right font-semibold tabular-nums">
-                          {(parseInt(tx.priceKrw) / 100000000).toFixed(2)}억
+                          {(parseInt(tx.priceKrw) / 10000).toFixed(2)}억
                         </td>
                         <td className="py-2.5 text-sm text-right tabular-nums">{tx.areaM2}㎡</td>
                       </tr>

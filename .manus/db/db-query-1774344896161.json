@@ -1,0 +1,40 @@
+{
+  "query": "SELECT t.price_krw, t.area_m2, t.contract_date, a.apt_name FROM transactions t JOIN apartments a ON t.apt_id = a.id WHERE a.apt_name = '삼성' AND a.dong = '도화동' LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 45SeMPVVWbWtu9a.7862c7fde036 --database Q77QHiwVKcvLETyWsxWgjH --execute SELECT t.price_krw, t.area_m2, t.contract_date, a.apt_name FROM transactions t JOIN apartments a ON t.apt_id = a.id WHERE a.apt_name = '삼성' AND a.dong = '도화동' LIMIT 5;",
+  "rows": [
+    {
+      "price_krw": "207000",
+      "area_m2": "84.985",
+      "contract_date": "2026-03-04",
+      "apt_name": "삼성"
+    },
+    {
+      "price_krw": "207000",
+      "area_m2": "84.985",
+      "contract_date": "2026-03-04",
+      "apt_name": "삼성"
+    },
+    {
+      "price_krw": "254500",
+      "area_m2": "136.65",
+      "contract_date": "2026-02-12",
+      "apt_name": "삼성"
+    },
+    {
+      "price_krw": "219000",
+      "area_m2": "84.985",
+      "contract_date": "2026-01-21",
+      "apt_name": "삼성"
+    },
+    {
+      "price_krw": "200000",
+      "area_m2": "84.985",
+      "contract_date": "2025-10-14",
+      "apt_name": "삼성"
+    }
+  ],
+  "messages": [],
+  "stdout": "price_krw\tarea_m2\tcontract_date\tapt_name\n207000\t84.985\t2026-03-04\t삼성\n207000\t84.985\t2026-03-04\t삼성\n254500\t136.65\t2026-02-12\t삼성\n219000\t84.985\t2026-01-21\t삼성\n200000\t84.985\t2025-10-14\t삼성\n",
+  "stderr": "",
+  "execution_time_ms": 1633
+}

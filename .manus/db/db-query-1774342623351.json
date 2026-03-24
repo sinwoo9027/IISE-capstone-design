@@ -1,0 +1,50 @@
+{
+  "query": "SELECT sigungu, COUNT(*) as apt_count FROM apartments GROUP BY sigungu ORDER BY apt_count DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 45SeMPVVWbWtu9a.7862c7fde036 --database Q77QHiwVKcvLETyWsxWgjH --execute SELECT sigungu, COUNT(*) as apt_count FROM apartments GROUP BY sigungu ORDER BY apt_count DESC LIMIT 10;",
+  "rows": [
+    {
+      "sigungu": "강서구",
+      "apt_count": "406"
+    },
+    {
+      "sigungu": "강남구",
+      "apt_count": "379"
+    },
+    {
+      "sigungu": "서초구",
+      "apt_count": "376"
+    },
+    {
+      "sigungu": "강동구",
+      "apt_count": "368"
+    },
+    {
+      "sigungu": "양천구",
+      "apt_count": "321"
+    },
+    {
+      "sigungu": "은평구",
+      "apt_count": "310"
+    },
+    {
+      "sigungu": "송파구",
+      "apt_count": "308"
+    },
+    {
+      "sigungu": "구로구",
+      "apt_count": "302"
+    },
+    {
+      "sigungu": "노원구",
+      "apt_count": "262"
+    },
+    {
+      "sigungu": "마포구",
+      "apt_count": "236"
+    }
+  ],
+  "messages": [],
+  "stdout": "sigungu\tapt_count\n강서구\t406\n강남구\t379\n서초구\t376\n강동구\t368\n양천구\t321\n은평구\t310\n송파구\t308\n구로구\t302\n노원구\t262\n마포구\t236\n",
+  "stderr": "",
+  "execution_time_ms": 1604
+}
